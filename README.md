@@ -571,10 +571,10 @@ if we clicked the link, the response action will be forwarded to shuffle which w
 
 #### Wazuh active response
 
-Before:
+Before providing the user input:
 ![image](https://github.com/user-attachments/assets/a1a02b60-26da-4bda-8264-0895ab4b5af1)
 
-After giving the reponse action:
+After providing the user input:
 
 ![image](https://github.com/user-attachments/assets/ee796c08-4302-469d-a432-2ba0c81bce0e)
 
