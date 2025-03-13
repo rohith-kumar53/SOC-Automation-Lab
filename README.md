@@ -46,6 +46,7 @@ Enter the credentials that you previously noted here.
 
 if you forgot those credentials and skipped noting that, then you can access the credentials from this file : `~/wazuh-install-files/wazuh-passwords.txt`. But at first you need to extract the `wazuh-install-files` zip file using `tar -xvf wazuh-install-files`. 
 
+
 ### Step 2 ~ Installing and Configuring TheHive
 
 TheHive instance also hosted in the cloud for this project and  the availability, the same above goes for here too.
@@ -268,32 +269,6 @@ Now if you open the Wazuh web interface and located into agents, now you can see
 
 ![image](https://github.com/user-attachments/assets/92cc0de9-6a41-4d8c-82cb-49a3775e29ab)
 
-In default wazuh doesn't log everything, we can configure to log everything so we don't miss out any events that will be important for us
-
-Backup the ossec.conf file
-```
-cp /var/ossec/etc/ossec.conf ~/ossec-backup.conf 
-```
-
-```
-nano /var/ossec/etc/ossec.conf
-```
-
-![image](https://github.com/user-attachments/assets/788b1c90-5b55-43dc-bd7c-2763ba8f8f0e)
-
-change the `logall` and `logall_json` to yes
-
-Save and Exit.
-
-```
-systemctl restar wazuh-manager.service
-```
-
-We need to make sure all the archive logs are seding to the wazuh, so we need to modify the filebeat config.
-
-```
-sudo nano  /etc/filebeat/filebeat.yml
-```
 
 #### Configuring Windows Telemetry
 
@@ -319,4 +294,292 @@ Also disable Windows Defender Smartscreen on the browser, for Microsot Edge brow
  
 ![image](https://github.com/user-attachments/assets/12bc7e63-cca3-4c89-a2c4-a6a8da939f55)
 
-####
+Now, We can download the mimikatz from the official github repository.
+
+### Step 4 ~ Configuring Wazuh (Part 2)
+
+#### Configuring Wazuh to collect all telemetry
+
+In default wazuh doesn't log everything, we can configure to log everything so we don't miss out any events that will be important for us
+
+Backup the ossec.conf file
+```
+cp /var/ossec/etc/ossec.conf ~/ossec-backup.conf 
+```
+
+```
+nano /var/ossec/etc/ossec.conf
+```
+
+![image](https://github.com/user-attachments/assets/788b1c90-5b55-43dc-bd7c-2763ba8f8f0e)
+
+change the `logall` and `logall_json` to yes
+
+Save and Exit.
+
+```
+systemctl restart wazuh-manager.service
+```
+
+We need to make sure all the archive logs are seding to the wazuh, so we need to modify the filebeat config.
+
+```
+sudo nano  /etc/filebeat/filebeat.yml
+```
+
+![image](https://github.com/user-attachments/assets/9900cb1f-e0e9-4a24-bd51-fa6c135040cb)
+
+set the archives enable to true then save and exit.
+
+```
+systemctl restart filebeat
+```
+
+#### creating index in wazuh
+
+Go to Stack Management > Index Pattern in Wazuh Web Interface.
+
+![image](https://github.com/user-attachments/assets/2332f091-3db0-44e1-bfab-6e2e9c1c260d)
+
+![image](https://github.com/user-attachments/assets/650d95ae-c09b-464c-b76d-ef27511a2c03)
+
+create new index pattern by defining `wazuh-archives-**` so it will include all the pattern starts with wazuh-archives-. 
+
+![image](https://github.com/user-attachments/assets/a374daa6-84ce-41ed-9c72-4ce8a30ff863)
+
+select this timestamp and select create index pattern.
+
+![image](https://github.com/user-attachments/assets/183fecdc-5859-42f5-badd-e19d48e369a2)
+
+In the discover option, select the index which we created. 
+
+Now we can execute the mimikatz in our windows endpoint and check in our wazuh server for the logs.
+
+if we searched for mimikatz in the discover option with the index pattern we chosen then all the logs related to the mimikatz will be show up in our Wazuh server.
+
+![image](https://github.com/user-attachments/assets/79cc1823-fb07-4eae-999c-bf43d760265b)
+
+### Step 5 ~  Creating Wazuh Alerts
+
+We can create a alert to detect mimikatz based up on the File Original Name attribute from the sysmon log. As simply changing the filename will not actually change this attribute value and comparing to other attributes this is much reliable although not foolproof since attacker can use some advanced technique to change this attribute but it is fine for now.
+
+We will use the Graphical Interface to configure this rule and it is also done by Commandline Interface.
+
+![image](https://github.com/user-attachments/assets/6b852822-fb6f-4463-aae6-f244af8d89b7)
+
+Lets create a custom rule for alerts if Mimikatz was executed.
+
+```
+  <rule id="100002" level="13">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)mimikatz\.exe</field>
+    <description>Spotted Mimikatz Execution</description>
+    <mitre>
+      <id>T1003</id>
+    </mitre>
+  </rule>
+```
+
+### Step 6 ~ SOAR Implementation using Shuffle
+
+![image](https://github.com/user-attachments/assets/edf0b118-5a63-45ef-88d8-3c32ca987eb2)
+
+#### Configuring Webhook app
+For the webhook app, we will only transfer the `Spotted Mimikatz Execution` alert to this webhook.
+
+In the Wazuh server:
+
+```
+nano /var/ossec/etc/ossec.conf`
+```
+
+```
+<integration>
+<name>shuffle</name>
+<hook_url>webhook_uri </hook_url>
+<rule_id>100002</rule_id>
+<alert_format>json</alert_format>
+</integration>
+```
+Add this to the ossec.conf file and make sure that the webhook_uri is retrieved from your shuffle workflows webhook app.
+
+```
+sudo systemct restart wazuh-manager.service
+```
+
+#### Configuring HTTP app
+To retrieve the api key of the wazuh server, we will use this http app.
+
+To know your authentication credential for the wazuh:
+
+```
+cat ~/~/wazuh-install-files/wazuh-passwords.txt
+```
+
+In here, you can see the credential of your wazuh server to authentical for the Wazuh server's API.
+
+In the http app, use curl to retrieve the api key .
+
+```
+curl -u username:password -k -X GET "https://<wazuh-IP>:55000/security/user/authenticate?raw=true"
+```
+
+#### Configuring regex
+
+We will configure regex to only retrieve the executed mimikatz files hash without any other values to provide input for virustotal.
+
+![image](https://github.com/user-attachments/assets/35d679b7-04ae-4bf9-8b2f-607ed276d94e)
+
+
+Other regex are used to retrieve only the username and image name (This is optional)
+
+![image](https://github.com/user-attachments/assets/9b4b019f-8230-4d3d-b278-d4165860fcbb)
+
+![image](https://github.com/user-attachments/assets/8ae827f8-bbb0-4856-9e3b-4561159d69d4)
+
+#### Enrichment using Virustotal
+We will use Virustotal to find if it was flagged as malicious from different vendors, by using the files hash.
+
+![image](https://github.com/user-attachments/assets/d0c250f3-6a21-4a8e-a432-9cf7fc08d707)
+
+We can authenticate by using our Virustotal api key and we need to get the hash report which we wil use the regex value we retrieved previously as the hash value input.
+
+#### Generating alert in TheHive
+ 
+Login to TheHive web interface and create an Organization. For example Hello, and we will create two members one is the analyst who will investigate and other is for API purpose.
+
+![image](https://github.com/user-attachments/assets/0bcaab13-5572-4113-8fe4-8d24db024220)
+
+Generate the API key from the account that you want to sign it using its API key for TheHive app in the shuffle.
+
+![image](https://github.com/user-attachments/assets/6d2d8568-d35d-47e5-a0b4-9df34c53152e)
+
+Lets configure in the Advance > Body
+Add the below data,  note i used the other regex values for username and image name, you can change that to default execution argument attributes or if you did the regex like me then you can simply leave it as it is. You can also add any more info or change the information like the way you find more interesting.
+
+```
+{
+  "description": " $exec.title on Computer: $exec.text.win.system.computer by the User: $username_regex.group_0.# ",
+  "externallink": "",
+  "flag": false,
+  "pap": 2,
+  "severity": 2,
+  "source": "Wazuh",
+  "sourceRef": "Rule: 100002",
+  "status": "New",
+  "summary": " $exec.title on Host: $exec.text.win.system.computer, executed by User: $username_regex.group_0.# with the process name: $image_name_regex.group_0.# ( PID: $exec.text.win.eventdata.processId ). It was detected as malicious by VirusTotal, with
+$virustotal_v3_1.#.body.data.attributes.last_analysis_stats.malicious vendors flagging it. It was executed from   $exec.text.win.eventdata.image, indicating a potential credential dumping attempt.",
+  "tags": ["T1003"],
+  "title": " $exec.title ",
+  "tlp": 2,
+  "type": "Internal",
+  "date": "$exec.all_fields.full_log.win.eventdata.utcTime"
+}
+```
+
+Save the workflow.
+
+#### User input
+
+we will use the User Input app for this puporse and will receive the user input via the email mentioning about the threat with all the necessary IOC information. Also we will get the option to whether contaminate the device or not by using a shuffle link.
+
+ 
+![image](https://github.com/user-attachments/assets/1e872daa-5bc5-48e3-b7c5-994d21c610ad)
+ 
+
+#### Wazuh Active response
+
+We will use the Wazuh active response feature to perform this automative response on the endpoint.
+
+The reponse action in this project is to contaminate the network, so we will create a bat script that can contaminate the network. For contaminating the network, we can do it in several different ways but to be simple and effective, we will turn off the network adapter in the endpoint so it can't reach the network in any ways (As there is only one Network Interfance in the endpoint, this will be efficient).
+
+In the endpoint agent.
+
+```
+@echo off
+netsh interface set interface "Ethernet" admin=disable
+```
+
+We will add this script in `C:\Program Files (x86)\ossec-agent\active-response\bin`  naming `disable-nic` with the `.bat` extension.
+
+
+In the Wazuh server:
+```
+nano /var/ossec/etc/ossec.conf
+```
+
+```
+  <command>
+    <name>disable-nic</name>
+    <executable>disable-nic.bat</executable>
+    <timeout_allowed>yes</timeout_allowed>
+  </command>
+
+  <active-response>
+    <command>disable-nic</command>
+    <location>local</location>
+    <level>15</level>
+    <timeout>no</timeout>
+  </active-response>
+```
+
+add this by searching for `active response` in that file and after the last default command(for better visibility) add the above command followed up by the active response tag value, which mentions the command that needs to be used for active response.
+
+```
+sudo systemctl restart wazu-manager.service
+```
+
+On the Wazuh app, you need to mention the command that needs to be executed and also the api key that you retrieved from HTTP app.
+
+![image](https://github.com/user-attachments/assets/355a6fcf-c723-4978-bdb8-84f64652dae7)
+
+
+### Step 7 ~ Automation in Action
+
+Lets change the filename of the mimikatz to `security_app` and execute it.
+
+![image](https://github.com/user-attachments/assets/cd214401-ce7f-4405-8ea9-3c3b486b5aad)
+
+![image](https://github.com/user-attachments/assets/40034cf1-3c0d-4c7e-87a1-da7447bd16a7)
+
+#### TheHive alert
+if we looked at TheHive alert, we can see the Mimikatz Execution alert popped up.
+
+![image](https://github.com/user-attachments/assets/308db667-2a88-472f-a2e8-0d08a7ce6b03)
+
+![image](https://github.com/user-attachments/assets/de5cc6e5-a638-40e8-bef9-567a33c38aa4)
+
+We can see, we have so much info regarding the alert including the virustotal enrichment, username, hostname, image location, etc.
+
+#### User Input via Email
+
+![image](https://github.com/user-attachments/assets/0dd084a2-aa64-40a2-abdf-0cc13409be5d)
+
+We also got a userinput via email for the responsive action.
+
+![image](https://github.com/user-attachments/assets/dc44966e-78cf-47d6-8b8f-7d185eea673f)
+
+We have a lot of info regarding the alert and also asking us for the reponsive action whether to contaminate the device from the network or not using the provided link.
+
+Lets use that link to give the reponse to contaminate the device from network. 
+
+
+
+![image](https://github.com/user-attachments/assets/5207d83c-aa3e-4478-9c72-b550cc5f9cb9)
+
+if we clicked the link, the response action will be forwarded to shuffle which will trigger the wazuh command.
+
+#### Wazuh active response
+
+Before:
+![image](https://github.com/user-attachments/assets/a1a02b60-26da-4bda-8264-0895ab4b5af1)
+
+After giving the reponse action:
+
+![image](https://github.com/user-attachments/assets/ee796c08-4302-469d-a432-2ba0c81bce0e)
+
+![image](https://github.com/user-attachments/assets/a969dff2-348c-4c82-b5cc-ce9914611ee2)
+
+The windows endpoint now succesfully contaminated from the network and we can perform further investigation without risking the attacker pivoting through the network and possibly compromising the Domain controller or what not.
+
+
