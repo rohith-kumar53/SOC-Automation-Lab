@@ -174,11 +174,12 @@ nano /etc/thehive/application.conf
 
 - Set application.baseURL to TheHive IP.
 
-![image](https://github.com/user-attachments/assets/b97021c0-ee9d-4d66-8e21-5653a7d149c3)
+![image](https://github.com/user-attachments/assets/1d632aad-4959-4b6f-ae49-258cfe10e360)
 
-![image](https://github.com/user-attachments/assets/011a669f-d4cd-4f2f-bf1e-eb4abea4b95a)
+![image](https://github.com/user-attachments/assets/39c3f06c-a9b8-486a-85d1-1165a76998c7)
 
-![image](https://github.com/user-attachments/assets/31a482f4-e285-431a-9d7f-1f6ab1a5b8bd)
+![image](https://github.com/user-attachments/assets/65bbb939-6e43-46dc-9007-262c1b30722c)
+
 
 Start and enable TheHive:
 
@@ -223,11 +224,12 @@ Access the Wazuh web interface.
 
 Deploy a new agent.
 
-![image](https://github.com/user-attachments/assets/b983d093-a3e3-4646-81c7-622c7fdf8881)
+![image](https://github.com/user-attachments/assets/8178ec5e-bc2b-4612-b80c-792263c1a392)
+
 
 Select based on the agent's OS and enter the Wazuh Server IP.
 
-![image](https://github.com/user-attachments/assets/82df5aae-4dad-4975-ab4f-2a29d5944b10)
+![image](https://github.com/user-attachments/assets/dc50343d-add0-40fc-8fcf-61a3bb1bfd2b)
 
 Copy the provided PowerShell command and execute it as an administrator on the Windows endpoint.
 
