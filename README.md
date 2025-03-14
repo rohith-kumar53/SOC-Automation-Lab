@@ -550,7 +550,8 @@ After providing the user input:
 
 ![image](https://github.com/user-attachments/assets/ee796c08-4302-469d-a432-2ba0c81bce0e)
 
-![image](https://github.com/user-attachments/assets/a969dff2-348c-4c82-b5cc-ce9914611ee2)
+![image](https://github.com/user-attachments/assets/599cc745-9839-418c-9132-6bb5b5cb8d20)
+
 
 Before user confirmation, the network interface is active. After user confirmation, the network interface is successfully disabled, isolating the endpoint and preventing further network communication.
 
