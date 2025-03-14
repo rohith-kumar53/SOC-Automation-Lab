@@ -536,7 +536,8 @@ An email alert is sent requesting user action to isolate the endpoint. Clicking 
 
 ![image](https://github.com/user-attachments/assets/0dd084a2-aa64-40a2-abdf-0cc13409be5d)
 
-![image](https://github.com/user-attachments/assets/dc44966e-78cf-47d6-8b8f-7d185eea673f)
+![Screenshot 2025-03-14 162224](https://github.com/user-attachments/assets/69c8bf56-7951-4a81-acfb-a09d72ae2392)
+
 
 ![image](https://github.com/user-attachments/assets/5207d83c-aa3e-4478-9c72-b550cc5f9cb9)
 
@@ -550,7 +551,7 @@ After providing the user input:
 
 ![image](https://github.com/user-attachments/assets/ee796c08-4302-469d-a432-2ba0c81bce0e)
 
-![image](https://github.com/user-attachments/assets/599cc745-9839-418c-9132-6bb5b5cb8d20)
+![Screenshot 2025-03-13 184028](https://github.com/user-attachments/assets/6483ec82-5272-43ca-9704-1686725b2317)
 
 
 Before user confirmation, the network interface is active. After user confirmation, the network interface is successfully disabled, isolating the endpoint and preventing further network communication.
