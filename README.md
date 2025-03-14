@@ -506,7 +506,8 @@ sudo systemctl restart wazu-manager.service
 
 On the Wazuh App in Shuffle, you need to mention the command that needs to be executed and also the api key that you retrieved from the HTTP app.
 
-![image](https://github.com/user-attachments/assets/355a6fcf-c723-4978-bdb8-84f64652dae7)
+![Screenshot 2025-03-13 181939](https://github.com/user-attachments/assets/e4279b0a-9726-4569-9ed3-74cbcc118654)
+
 
 
 ### Step 7 ~ Automation in Action
