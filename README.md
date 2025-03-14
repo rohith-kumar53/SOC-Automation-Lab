@@ -102,15 +102,17 @@ sudo nano /etc/cassandra/cassandra.yaml
 
 You can change the name of the cluster
 
-![image](https://github.com/user-attachments/assets/9f337922-112d-42d9-92fb-5168070cb751)
+![image](https://github.com/user-attachments/assets/20063464-5c05-4e83-9699-761de0b3c063)
+
 
 - Set the listen_address and `rpc_address` to your TheHive instance IP.
 
 - Update the `seed` IP address.
 
-![image](https://github.com/user-attachments/assets/d7f8924f-feaa-4240-9c35-965c854bca7e)
+![image](https://github.com/user-attachments/assets/57118ff6-7f49-4f29-b5db-1418b139f40f)
 
-![image](https://github.com/user-attachments/assets/e4fa10b2-fac6-415f-9c71-8af96a6e6faa)
+![image](https://github.com/user-attachments/assets/00616e70-e53e-46dd-8692-3b5ebad9bd0f)
+
 
 Restart and enable Cassandra:
 
@@ -141,7 +143,8 @@ Uncomment `network.host` and Set TheHive IP Address
 
 Remove the `#` to uncomment it:
 
-![image](https://github.com/user-attachments/assets/63a346aa-f893-4bc9-aafc-3cf3df5d7b17)
+![image](https://github.com/user-attachments/assets/0b7467f9-1304-4329-9749-4cd96c0ed788)
+
 
 Uncomment `http.port`
 
