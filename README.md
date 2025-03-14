@@ -5,19 +5,19 @@ This project automates SOC processes by integrating Sysmon, Wazuh, Shuffle, and 
 
 ### Skills Learned
 
-- Advanced understanding of integrating and automating security workflows using SOAR platforms.
-- Proficiency in managing case creation and tracking incidents.
-- Strong understanding of endpoint security through integrating EDR-like solutions for detecting advanced threats.
-- Enhanced skills in configuring alerting systems and creating custom detection rules for specific threats like Mimikatz.
-- Practical experience in automating incident response actions, including device quarantine and notification workflows.
+- Advanced integration and automation of security workflows using SOAR platforms.
+- Incident tracking and case management.
+- Endpoint security and advanced threat detection.
+- Configuring custom detection rules and alerting systems.
+- Automating incident response actions, including device quarantine and notifications.
 
 ### Tools Used
 
-- Wazuh – Implemented as an SIEM and EDR solution for log ingestion, analysis, and endpoint threat detection.
-- Shuffle – Configured as a Security Orchestration, Automation, and Response (SOAR) platform to automate security workflows and incident response.
-- TheHive – Used for case management, incident tracking, and investigation.
-- VirusTotal – Integrated for enriching security alerts with file hash analysis and threat intelligence.
-- Sysmon – Implemented for advanced logging and detailed endpoint monitoring.
+- Wazuh ~ SIEM and EDR for log analysis and endpoint threat detection.
+- Shuffle ~ SOAR platform for automating security workflows and incident response.
+- TheHive ~ Case management and incident tracking.
+- VirusTotal ~ Threat intelligence through file hash analysis.
+- Sysmon ~ Advanced endpoint logging and monitoring.
 
 ### Network Diagram
 
