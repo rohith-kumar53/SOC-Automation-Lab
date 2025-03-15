@@ -1,4 +1,4 @@
-# SOC-Automation-Project
+# SOC-Automation-Lab
 ## Objective
 
 This project automates SOC processes by integrating Sysmon, Wazuh, Shuffle, and TheHive. When Mimikatz is detected, the system enriches the alert, triggers automated actions, and creates a case in TheHive. SOC analysts are notified via email with a link to quarantine the infected device. This streamlines detection, response, and case management, improving overall security efficiency.
